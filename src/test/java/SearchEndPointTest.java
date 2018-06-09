@@ -9,14 +9,12 @@ import static org.hamcrest.Matchers.*;
 
 public class SearchEndPointTest extends BaseApiTest {
     private static final String URLENDPOINT = "3/search/";
-    Map<String, String> parameters = new HashMap<String, String>();
+    private static final String MOVIE = "movie";
+    private static final String PERSON = "person";
 
     @Test
     public void validSearchTestByMovie() {
-        parameters.put("include_adult", "false");
-        parameters.put("language", "en-us");
-        parameters.put("query", "Jaws");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "movie", parameters))
+        given().when().get(urlBuilder(MOVIE,"jaws" ))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(37)
                         , "total_pages", equalTo(2));
@@ -24,20 +22,14 @@ public class SearchEndPointTest extends BaseApiTest {
 
     @Test
     public void invalidSearchTestByMovieLeavingBlank() {
-        parameters.put("include_adult", "false");
-        parameters.put("language", "en-us");
-        parameters.put("query", "");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "movie", parameters))
+        given().when().get(urlBuilder(MOVIE, ""))
                 .then().statusCode(Status.UNPROCEESABLEENTITY.getStatusCode())
                 .body("status_message", equalTo(Status.UNPROCEESABLEENTITY.getErrorMessage()));
     }
 
     @Test
     public void validSearchTestByMovieSpecialCharacters() {
-        parameters.put("include_adult", "false");
-        parameters.put("language", "en-us");
-        parameters.put("query", "@*/!?=");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "movie", parameters))
+        given().when().get(urlBuilder(MOVIE, "@*/!?="))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(0));
 
@@ -45,10 +37,7 @@ public class SearchEndPointTest extends BaseApiTest {
 
     @Test
     public void validSearchTestByMovieNull() {
-        parameters.put("include_adult", "false");
-        parameters.put("language", "en-us");
-        parameters.put("query", null);
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "movie", parameters))
+        given().when().get(urlBuilder(MOVIE,null))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(97)
                         , "total_pages", equalTo(5));
@@ -56,10 +45,7 @@ public class SearchEndPointTest extends BaseApiTest {
 
     @Test
     public void validSearchTestByPerson() {
-        parameters.put("include_adult", "false");
-        parameters.put("language", "en-us");
-        parameters.put("query", "rod-serling");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "person", parameters))
+        given().when().get(urlBuilder(PERSON, "rod-serling"))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("results.name", hasItem("Rod Serling")
                         , "results.known_for.name", hasItem(hasItem("The Twilight Zone")));
@@ -67,18 +53,14 @@ public class SearchEndPointTest extends BaseApiTest {
 
     @Test
     public void validSearchTestByPersonNull() {
-        parameters.put("include_adult", "false");
-        parameters.put("language", "en-us");
-        parameters.put("query", null);
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "person", parameters))
+        given().when().get(urlBuilder(PERSON, null))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(13));
     }
 
     @Test
     public void validSearchTestByTVShow() {
-        parameters.put("query", "The Twilight Zone");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "tv", parameters))
+        given().when().get(urlBuilder("tv", "The Twilight Zone"))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(3)
                         , "results.first_air_date", hasItem("1959-10-02"));
@@ -87,25 +69,29 @@ public class SearchEndPointTest extends BaseApiTest {
 
     @Test
     public void validSearchTestByCompany() {
-        parameters.put("query", "Pixar Studios");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "company", parameters))
+        given().when().get(urlBuilder("company", "Pixar Studios"))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(1));
     }
 
     @Test
     public void validSearchTestByMulti() {
-        parameters.put("query", "Studio Ghibli");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "multi", parameters))
+        given().when().get(urlBuilder("multi", "Studio Ghibli"))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(5));
     }
 
     @Test
     public void validSearchTestByKeyword() {
-        parameters.put("query", "movie");
-        given().when().get(setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + "keyword", parameters))
+        given().when().get(urlBuilder("keyword","movie"))
                 .then().statusCode(Status.STATUSOKAY.getStatusCode())
                 .body("total_results", equalTo(88));
+    }
+
+    public String urlBuilder(String searchEndPoint, String query){
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("query", query);
+        parameters.put("include_adult", "false");
+        return setupBaseURLAndAppendApiKeyAndParameters(URLENDPOINT + searchEndPoint, parameters);
     }
 }
