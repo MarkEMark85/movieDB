@@ -6,13 +6,13 @@ import java.util.Map;
 public class BaseApiTest {
 
     public static final String BASE_URL = "https://api.themoviedb.org/";
-    public static final String API_KEY = "3f166dad68abb3adf2102fe18c2e99d7";
+    public static final String API_KEY = "";
 
     public enum Status {
         STATUS_OKAY(200),
         BAD_REQUEST(401, 7, "Invalid API key: You must be granted a valid key."),
         NOT_FOUND(404, 34, "The resource you requested could not be found."),
-        UNPROCESSABLE_ENTITY(422, 0, "query must be provided");
+        UNPROCESSABLE_ENTITY(422);
 
         int statusCode;
         int errorCode;

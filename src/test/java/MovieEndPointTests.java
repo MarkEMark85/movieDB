@@ -1,21 +1,20 @@
 import Helpers.BaseApiTest;
 import org.testng.annotations.Test;
 
-import static Helpers.CommonKeys.STATUS_CODE;
-import static Helpers.CommonKeys.STATUS_MESSAGE;
+import static Helpers.CommonKeys.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 
-public class MovieEndPointTest extends BaseApiTest {
+public class MovieEndPointTests extends BaseApiTest {
     public static final String MOVIE_ENDPOINT = "3/movie/";
 
     @Test
     public void testMovieValidID() {
         given().when().get(setupBaseURL(MOVIE_ENDPOINT + "22586"))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
-                .body("release_date", equalTo("1994-11-18")
-                        , "runtime", equalTo(89));
+                .body(RELEASE_DATE, equalTo("1994-11-18")
+                        , RUNTIME, equalTo(89));
     }
 
     @Test

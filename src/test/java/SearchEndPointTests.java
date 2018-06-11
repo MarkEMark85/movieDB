@@ -4,72 +4,63 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static Helpers.CommonKeys.*;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 
-public class SearchEndPointTest extends BaseApiTest {
+public class SearchEndPointTests extends BaseApiTest {
     private static final String SEARCH_ENDPOINT = "3/search/";
-    private static final String RESULTS_TITLE = "results.title";
-    private static final String RESULTS_NAME = "results.name";
 
 
     @Test
-    public void testValidMovieSearch() {
+    public void testSearchMovieValidInfo() {
         given().when().get(urlBuilder(SearchPoint.MOVIE.getValue(), "Harry-Potter", false))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(RESULTS_TITLE, hasItem("Harry Potter and the Half-Blood Prince")
-                        , "results.release_date", hasItem("2009-07-07"));
+                        , RESULTS_RELEASE_DATE, hasItem("2009-07-07"));
     }
 
     @Test
-    public void testMovieEmptyFieldFails() {
+    public void testSearchMovieEmptyFieldFails() {
         given().when().get(urlBuilder(SearchPoint.MOVIE.getValue(), "", true))
                 .then().statusCode(Status.UNPROCESSABLE_ENTITY.getStatusCode())
-                .body("errors", hasItem(Status.UNPROCESSABLE_ENTITY.getErrorMessage()));
+                .body(ERRORS, hasItem("query must be provided"));
     }
 
 
     @Test
-    public void testPersonValidInfo() {
+    public void testSearchPersonValidInfo() {
         given().when().get(urlBuilder(SearchPoint.PERSON.getValue(), "rod-serling", false))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(RESULTS_NAME, hasItem("Rod Serling")
-                        , "results.known_for.name", hasItem(hasItem("The Twilight Zone")));
+                        , RESULTS_KNOWN_FOR_NAME, hasItem(hasItem("The Twilight Zone")));
     }
 
     @Test
-    public void testPersonNullFails() {
-        given().when().get(urlBuilder(SearchPoint.PERSON.getValue(), null, false))
-                .then().statusCode(Status.STATUS_OKAY.getStatusCode())
-                .body("total_results", equalTo(13));
-    }
-
-    @Test
-    void testPersonEmptyFieldFails() {
+    public void testSearchPersonEmptyFieldFails() {
         given().when().get(urlBuilder(SearchPoint.PERSON.getValue(), "", true))
                 .then().statusCode(Status.UNPROCESSABLE_ENTITY.getStatusCode())
-                .body("errors", hasItem(Status.UNPROCESSABLE_ENTITY.getErrorMessage()));
+                .body(ERRORS, hasItem("query must be provided"));
     }
 
     @Test
-    public void testTVSearchValidInfo() {
+    public void testSearchTVValidInfo() {
         given().when().get(urlBuilder(SearchPoint.TV.getValue(), "The Twilight Zone", false))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(RESULTS_NAME, hasItem("The Twilight Zone")
-                        , "results.first_air_date", hasItem("1959-10-02"));
+                        , RESULTS_FIRST_AIR_DATE, hasItem("1959-10-02"));
 
     }
 
     @Test
-    public void testCompanySearchValidInfo() {
+    public void testSearchCompanyValidInfo() {
         given().when().get(urlBuilder(SearchPoint.COMPANY.getValue(), "Pixar Studios", false))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(RESULTS_NAME, hasItem("Pixar"));
     }
 
     @Test
-    public void testMultiSearchValidInfo() {
+    public void testSearchMultiValidInfo() {
         given().when().get(urlBuilder(SearchPoint.MULTI.getValue(), "Showman", false))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(RESULTS_TITLE, hasItem("The Greatest Showman")
@@ -77,7 +68,7 @@ public class SearchEndPointTest extends BaseApiTest {
     }
 
     @Test
-    public void testKeywordSearchValidInfo() {
+    public void testSearchKeywordValidInfo() {
         given().when().get(urlBuilder(SearchPoint.KEYWORD.getValue(), "shark", false))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(RESULTS_NAME, hasItem("shark attack"));

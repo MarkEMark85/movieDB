@@ -14,9 +14,9 @@ public class TVEndPointTests extends BaseApiTest {
         given().when().get(setupBaseURL(TV_ENDPOINT + "2317"))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(NAME, equalTo("My Name Is Earl")
-                        , "genres.name", hasItem("Comedy")
-                        , "number_of_episodes", equalTo(96)
-                        , "number_of_seasons", equalTo(4));
+                        , GENRES_NAME, hasItem("Comedy")
+                        , NUMBER_OF_EPISODES, equalTo(96)
+                        , NUMBER_OF_SEASONS, equalTo(4));
     }
 
     @Test
@@ -24,9 +24,9 @@ public class TVEndPointTests extends BaseApiTest {
         given().when().get(setupBaseURL(TV_ENDPOINT + "2317/season/2"))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(NAME, equalTo("Season 2")
-                        , "episodes", hasSize(23)
-                        , "season_number", equalTo(2)
-                        , "air_date", equalTo("2006-09-21"));
+                        , EPISODES, hasSize(23)
+                        , SEASON_NUMBER, equalTo(2)
+                        , AIR_DATE, equalTo("2006-09-21"));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class TVEndPointTests extends BaseApiTest {
         given().when().get(setupBaseURL(TV_ENDPOINT + "2317a"))
                 .then().statusCode(Status.STATUS_OKAY.getStatusCode())
                 .body(NAME, equalTo("My Name Is Earl")
-                        , "first_air_date", equalTo("2005-09-20"));
+                        , FIRST_AIR_DATE, equalTo("2005-09-20"));
     }
 
     @Test
@@ -102,10 +102,3 @@ public class TVEndPointTests extends BaseApiTest {
     }
 
 }
-
-
-/*
-TODO: 5/27/2018 invaild number, huge number, leave emptying, test letters in ID. test with null, Special characters, invaild, no API_Key'
-TODO: 5/27/2018 make Enums for Status codes and error codes/messages.
-*/
-
